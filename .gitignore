@@ -1,0 +1,6 @@
+*.out
+*.o
+Aho_Corasick
+search_with_joker
+test_Aho_Corasick
+test_Joker
