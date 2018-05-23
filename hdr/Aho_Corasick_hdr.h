@@ -5,8 +5,9 @@
 
 typedef std::pair<int, int> res_pair;
 
-void strToAlphabet(std::string &str);
+// void strToAlphabet(std::string &str);
 bool compareForSort(res_pair el1, res_pair el2);
+
 std::vector<res_pair > Aho_Corasick(std::string text, 
 									std::vector<std::string> patterns,
 									size_t number_of_patterns);
@@ -16,8 +17,8 @@ struct Bohr_vertex_AC
 	 Bohr_vertex_AC(char symbol, int parrent_link = -1);
 
 	 //data
-	int next_vertices[ALPHABET_SIZE];
-	int moves[ALPHABET_SIZE];
+	std::map<char,int> next_vertices;
+	std::map<char,int> moves;
 	int pattern_number;
 	int suffix_link ;
 	int correct_suffix_link;

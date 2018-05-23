@@ -36,20 +36,20 @@ TEST(Aho_Corasick_T, Repeated)
 
 
 
-TEST(Joker, Incomplete)
+TEST(Joker_T, Incomplete)
 {
 	EXPECT_EQ(search_with_joker("AACT", "T$",'$'), std::vector<int>());
 	EXPECT_EQ(search_with_joker("AGNTNNAAGTCNTACGNTACNGTNCGACGTGGACGTANGTANGTC", "A$C$A",'$'), std::vector<int>());
 }
 
-TEST(Joker, Simle)
+TEST(Joker_T, Simle)
 {
 	EXPECT_EQ(search_with_joker("AACT", "A$",'$'), std::vector<int>({1,2}));
 	EXPECT_EQ(search_with_joker("CCAT", "C%",'%'), std::vector<int>({1,2}));
 	EXPECT_EQ(search_with_joker("AACT", "A$$",'$'), std::vector<int>({1,2}));
 }
 
-TEST(Joker, Normal)
+TEST(Joker_T, Normal)
 {
 	EXPECT_EQ(search_with_joker("AGNTNNAAGTCNTACGNTACNGTNCGACGTGGACGTANGTANGTC", "A$GT$",'$'), std::vector<int>({7,27,33,37,41}));
 }

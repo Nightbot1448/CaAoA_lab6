@@ -1,14 +1,15 @@
 #ifndef INCLUDES_H_
 #define INCLUDES_H_
 
+#include <sstream>
 #include <iostream>
-#include <vector>
 #include <string>
+#include <vector>
+#include <map>
+
 #include <algorithm>
-#include <string.h>
 #include <utility>
 
-#define ALPHABET_SIZE 6
-enum Alphabet {A, C, G, T, N, UNDEF};
+#include <cstring>
 
 #endif //INCLUDES_H_

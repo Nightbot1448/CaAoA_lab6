@@ -4,44 +4,12 @@ std::vector<res_pair > Aho_Corasick(std::string text,
 									std::vector<std::string> patterns, 
 									size_t number_of_patterns) // typedef in Aho_Corasick_hdr
 {
-	strToAlphabet(text);
-	for (size_t i = 0; i < number_of_patterns; i++)
-		strToAlphabet(patterns[i]);
-
 	BohrTree_AC bohr;
 	for (size_t i = 0; i<number_of_patterns; i++)
 		bohr.addStrToBohr(patterns[i], i);
 	std::vector<res_pair> results = bohr.findIn(text, patterns);
 	std::sort(results.begin(), results.end(), compareForSort);
 	return results;
-}
-
-void strToAlphabet(std::string &str)
-{
-	for (size_t i = 0; i < str.size(); i++)
-	{
-		switch (str[i])
-		{
-		case 'A': 
-			str[i] = A; 
-			break;
-		case 'C':
-			str[i] = C; 
-			break;
-		case 'G':
-			str[i] = G; 
-			break;
-		case 'T':
-			str[i] = T; 
-			break;
-		case 'N':
-			str[i] = N; 
-			break;
-		default: 
-			str[i] = UNDEF; 
-			break;
-		}
-	}
 }
 
 bool compareForSort( res_pair el1, res_pair el2)
@@ -52,17 +20,20 @@ bool compareForSort( res_pair el1, res_pair el2)
 		return el1.first < el2.first;
 }
 
-Bohr_vertex_AC::Bohr_vertex_AC(char symbol, int parrent_link) : parrent_link(parrent_link), 
-													  symbol(symbol), 
-													  is_end_of_pattern(false)
+Bohr_vertex_AC::Bohr_vertex_AC(char symbol, int parrent_link) : 
+	parrent_link(parrent_link), 
+	symbol(symbol), 
+	is_end_of_pattern(false),
+	suffix_link(-1),
+	correct_suffix_link(-1)
 {
-	memset(this->next_vertices, 255,
-	sizeof(this->next_vertices) + sizeof(this->moves)+(sizeof(int)*3));
+	next_vertices[symbol] = -1;
+	moves[symbol] = -1;
 }
 
 BohrTree_AC::BohrTree_AC()
 {
-	bohr.push_back(Bohr_vertex_AC(UNDEF));
+	bohr.push_back(Bohr_vertex_AC('$'));
 }
 
 void BohrTree_AC::addStrToBohr(const std::string &pattern, int numberOfPattern)
@@ -71,14 +42,14 @@ void BohrTree_AC::addStrToBohr(const std::string &pattern, int numberOfPattern)
 
 	for (size_t i = 0; i < pattern.size(); i++)
 	{
-		if (bohr[vertexNum].next_vertices[pattern[i]] == -1)
+		char symb = pattern[i];
+		if (bohr[vertexNum].next_vertices.find(symb) == bohr[vertexNum].next_vertices.end() || bohr[vertexNum].next_vertices[symb] == -1)
 		{
-			bohr.push_back(Bohr_vertex_AC(pattern[i], vertexNum));
-			bohr[vertexNum].next_vertices[pattern[i]] = bohr.size() - 1;
+			bohr.push_back(Bohr_vertex_AC(symb, vertexNum));
+			bohr[vertexNum].next_vertices[symb] = bohr.size() - 1;
 		}
-
-		vertexNum = bohr[vertexNum].next_vertices[pattern[i]];
-
+		
+		vertexNum = bohr[vertexNum].next_vertices[symb];
 	}
 
 	bohr[vertexNum].pattern_number = numberOfPattern;
@@ -101,9 +72,9 @@ int BohrTree_AC::getSuffixLink(int vertexNum)
 
 int BohrTree_AC::getAutoMove(int vertexNum, char symbol)
 {
-	if (bohr[vertexNum].moves[symbol] == -1)
+	if (bohr[vertexNum].moves.find(symbol) == bohr[vertexNum].moves.end() || bohr[vertexNum].moves[symbol] == -1)
 	{
-		if (bohr[vertexNum].next_vertices[symbol] != -1)
+		if (bohr[vertexNum].next_vertices.find(symbol) != bohr[vertexNum].next_vertices.end() && bohr[vertexNum].next_vertices[symbol] != -1)
 			bohr[vertexNum].moves[symbol] = bohr[vertexNum].next_vertices[symbol];
 		else
 		{
