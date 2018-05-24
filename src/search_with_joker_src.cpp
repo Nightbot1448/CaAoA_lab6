@@ -1,156 +1,173 @@
 #include "../hdr/search_with_joker_hdr.h"
 
-std::vector<int> search_with_joker(std::string text, std::string jokerPattern, char joker)
+vector <int> search_with_joker(std::wstring text, std::wstring joker, wchar_t jokerSymb)
 {
-	std::stringstream s_jp(jokerPattern);
-	BohrTree_J bohrTree_J(text.size());
-	bohrTree_J.getParseStrApart(s_jp, joker);
-
-	bohrTree_J.findIn(text);
-
-	std::vector<int> results;
-
-	for(int i=0; i < text.size()-jokerPattern.size()+1; i++)
-	{
-
-		if(bohrTree_J.count[i] == bohrTree_J.patterns.size())
-			results.push_back(i+1);
-	}
-	return results;
+	Bohr_Tree AKsearch(text.size());
+	return AKsearch.searchJokerByBohr(text, joker, jokerSymb);
 }
 
-
-void BohrTree_J::getParseStrApart(std::stringstream &pattern_stream, char joker)
+Bohr_Tree::Bohr_Tree(size_t text_size) 
 {
-	std::string tmp;
-	int len = 0;
-	while(getline(pattern_stream, tmp, joker))
-	{
-		if(tmp.size()>0)
-		{
-			len+=tmp.size();
-			lengths.push_back(len);
-			addStrToBohr(tmp);
-		}
-		len++;
-	}
+	bohr.push_back(Bohr_Vertex(-1)); 
+	background = vector<int>(text_size, 0);
 }
 
-
-Bohr_vertex_J::Bohr_vertex_J(char symbol, int parrent_link) :
-	parrent_link(parrent_link), 
-	symbol(symbol), 
-	is_end_of_pattern(false),
-	suffix_link(-1),
-	correct_suffix_link(-1)
-{
-	next_vertices[symbol] = -1;
-	moves[symbol] = -1;
-}
-
-
-BohrTree_J::BohrTree_J(size_t size)
-{
-	bohr.push_back(Bohr_vertex_J(0, '$'));
-	count = std::vector<int>(size, 0);
-}
-
-
-void BohrTree_J::addStrToBohr(const std::string &pattern)
+void Bohr_Tree::addStrToBohr(const wstring &pattern, int numberOfPattern)
 {
 	int vertexNum = 0;
 
 	for (size_t i = 0; i < pattern.size(); i++)
 	{
-		char symb = pattern[i];
-		if (bohr[vertexNum].next_vertices.find(symb) == bohr[vertexNum].next_vertices.end() ||
-			bohr[vertexNum].next_vertices[symb] == -1)
+		if (bohr[vertexNum].listOfNextVertex.find(pattern[i]) == bohr[vertexNum].listOfNextVertex.end())
 		{
-			bohr.push_back(Bohr_vertex_J(symb, vertexNum));
-			bohr[vertexNum].next_vertices[symb] = bohr.size() - 1;
+
+			bohr.push_back(Bohr_Vertex(pattern[i], vertexNum));
+			bohr[vertexNum].listOfNextVertex[pattern[i]] = bohr.size() - 1;
 		}
-		vertexNum = bohr[vertexNum].next_vertices[symb];
+		vertexNum = bohr[vertexNum].listOfNextVertex[pattern[i]];
 	}
-	bohr[vertexNum].is_end_of_pattern = true;
-	patterns.push_back(pattern);
-	bohr[vertexNum].pattern_number.push_back(patterns.size()-1);
+	bohr[vertexNum].patternNum.push_back(numberOfPattern);
+	bohr[vertexNum].isEndOfPattern = true;
 
 }
 
-
-int BohrTree_J::getSuffixLink(int vertexNum)
+int Bohr_Tree::getSuffixLink(int vertexNum)
 {
-	if (bohr[vertexNum].suffix_link == -1)
+	if (bohr[vertexNum].suffLink == -1)
 	{
-		if (vertexNum == 0 || bohr[vertexNum].parrent_link == 0)
-			bohr[vertexNum].suffix_link = 0;
+		if (vertexNum == 0 || bohr[vertexNum].parrentLink == 0)
+			bohr[vertexNum].suffLink = 0;
 		else
-			bohr[vertexNum].suffix_link = getAutoMove(getSuffixLink(bohr[vertexNum].parrent_link), bohr[vertexNum].symbol);
+			bohr[vertexNum].suffLink = getAutoMove(getSuffixLink(bohr[vertexNum].parrentLink), bohr[vertexNum].symb);
 	}
 
-	return bohr[vertexNum].suffix_link;
+	return bohr[vertexNum].suffLink;
 }
 
-
-int BohrTree_J::getAutoMove(int vertexNum, char symbol)
+int Bohr_Tree::getAutoMove(int vertexNum, wchar_t symb)
 {
-	if (bohr[vertexNum].moves.find(symbol) == bohr[vertexNum].moves.end() || bohr[vertexNum].moves[symbol] == -1)
+	if (bohr[vertexNum].moves.find(symb) == bohr[vertexNum].moves.end())
 	{
-		if (bohr[vertexNum].next_vertices.find(symbol) != bohr[vertexNum].next_vertices.end() && bohr[vertexNum].next_vertices[symbol] != -1)
-			bohr[vertexNum].moves[symbol] = bohr[vertexNum].next_vertices[symbol];
+		if (bohr[vertexNum].listOfNextVertex.find(symb) != bohr[vertexNum].listOfNextVertex.end())
+			bohr[vertexNum].moves[symb] = bohr[vertexNum].listOfNextVertex[symb];
 		else
 		{
 			if (vertexNum == 0)
-				bohr[vertexNum].moves[symbol] = 0;
+				bohr[vertexNum].moves[symb] = 0;
 			else
-				bohr[vertexNum].moves[symbol] = getAutoMove(getSuffixLink(vertexNum), symbol);
+				bohr[vertexNum].moves[symb] = getAutoMove(getSuffixLink(vertexNum), symb);
 		}
 	}
-	return bohr[vertexNum].moves[symbol];
+	return bohr[vertexNum].moves[symb];
 }
 
-
-int BohrTree_J::getCorrectSuffixLink(int vertexNum)
+int Bohr_Tree::getCorrectSuffixLink(int vertexNum)
 {
-	if (bohr[vertexNum].correct_suffix_link == -1)
+	if (bohr[vertexNum].correctSuffLink == -1)
 	{
 		int tmpLink = getSuffixLink(vertexNum);
 		if (tmpLink == 0)
-			bohr[vertexNum].correct_suffix_link = 0;
+			bohr[vertexNum].correctSuffLink = 0;
 		else
 		{
-			if (bohr[tmpLink].is_end_of_pattern)
-				bohr[vertexNum].correct_suffix_link = tmpLink;
+			if (bohr[tmpLink].isEndOfPattern == true)
+				bohr[vertexNum].correctSuffLink = tmpLink;
 			else
-				bohr[vertexNum].correct_suffix_link = getCorrectSuffixLink(tmpLink);
+				bohr[vertexNum].correctSuffLink = getCorrectSuffixLink(tmpLink);
 		}
 	}
-	return bohr[vertexNum].correct_suffix_link;
+	return bohr[vertexNum].correctSuffLink;
 }
 
-
-void BohrTree_J::check(int vertexNum, int i)
+void Bohr_Tree::SubstringsCheck(int vertexNum, int currentPos/*, const vector <wstring> &patterns*/, vector <Result> &results)
 {
 	for (int nextVertex = vertexNum; nextVertex != 0; nextVertex = getCorrectSuffixLink(nextVertex))
 	{
-		if (bohr[nextVertex].is_end_of_pattern)
-		{	
-			for (const auto &it : bohr[nextVertex].pattern_number)
+		if (bohr[nextVertex].isEndOfPattern)
+			results.push_back({ currentPos - (int)patterns[bohr[nextVertex].patternNum.back()].size() + 1,
+				bohr[nextVertex].patternNum.back() + 1 });
+	}
+}
+
+void Bohr_Tree::jokerCheck(int vertexNum, int currentPos, size_t jokerLength)
+{
+	for (int nextVertex = vertexNum; nextVertex != 0; nextVertex = getCorrectSuffixLink(nextVertex))
+	{
+		if (bohr[nextVertex].isEndOfPattern)
+		{
+			for (size_t m = 0; m < bohr[nextVertex].patternNum.size(); m++)
 			{
-				if( static_cast<int>(i-lengths[it]) < count.size() )
-					count[i-lengths[it]]++;
+				if ((currentPos - (int)lengths[bohr[nextVertex].patternNum[m]]) >= 0)
+					if ((++background[currentPos - lengths[bohr[nextVertex].patternNum[m]]]) == (int)lengths.size())
+					{
+						if (background.size() - (currentPos - lengths[bohr[nextVertex].patternNum[m]]) >= jokerLength)
+							results.push_back(currentPos - lengths[bohr[nextVertex].patternNum[m]] + 1);
+					}
 			}
 		}
 	}
 }
 
-
-void BohrTree_J::findIn(const std::string &text)
+vector <Result> Bohr_Tree::searchSubstringsByBohr(const wstring &text)
 {
+	for (size_t i = 0; i<patterns.size(); i++)
+		addStrToBohr(patterns[i], i);
+
+	vector <Result> results;
+
 	int vertexNum = 0;
+
 	for (size_t i = 0; i < text.size(); i++)
 	{
 		vertexNum = getAutoMove(vertexNum, text[i]);
-		check(vertexNum, i + 1);
+		SubstringsCheck(vertexNum, i + 1, results);
 	}
+
+	return results;
+}
+
+vector <size_t> Bohr_Tree::jokerParse(const wstring &jokerPattern, wchar_t joker)
+{
+
+	vector <size_t> lengths;
+
+	wstring tmp;
+
+	for (size_t i = 0; i < jokerPattern.size(); i++)
+	{
+		if (jokerPattern[i] == joker)
+		{
+			if (tmp.size() > 0)
+			{
+				lengths.push_back(i);
+				addStrToBohr(tmp, (int)(lengths.size() - 1));
+				tmp.clear();
+			}
+			continue;
+		}
+		else
+			tmp.push_back(jokerPattern[i]);
+
+		if ((i == (jokerPattern.size() - 1)) && tmp.size())
+		{
+			lengths.push_back(i + 1);
+			addStrToBohr(tmp, (int)(lengths.size() - 1));
+		}
+	}
+
+	return lengths;
+}
+
+vector<int> Bohr_Tree::searchJokerByBohr(const wstring &text, const wstring &joker, wchar_t jokerSymb)
+{
+	lengths = jokerParse(joker, jokerSymb);
+	int vertexNum = 0;
+
+	for (size_t i = 0; i < text.size(); i++)
+	{
+		vertexNum = getAutoMove(vertexNum, text[i]);
+		jokerCheck(vertexNum, i + 1, joker.size());
+	}
+
+	return results;
 }

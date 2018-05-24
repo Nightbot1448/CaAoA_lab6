@@ -26,7 +26,7 @@ test_Aho_Corasick : test_Aho_Corasick.o $(T_OBJECTS)
 test_Joker : test_search_with_joker.o $(T_OBJECTS)
 	$(G++) $^ -o $@ $(LD_FLAGS)
 
-testAll : test_Aho_Corasick est_Joker
+testAll : test_Aho_Corasick test_Joker
 	./test_Aho_Corasick
 	./test_Joker
 	

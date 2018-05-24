@@ -1,18 +1,18 @@
-#include <fstream>
 #include "../hdr/search_with_joker_hdr.h"
-
 
 int main()
 {
-	std::string text;
-	std::string joker_pattern;
-	char joker;
-	std::cin >> text >> joker_pattern >> joker;
+	setlocale(LC_ALL, "");
+	wstring text;
+	wstring joker;
+	wchar_t jokerSymb;
+	wcin >> text >> joker >> jokerSymb;
 
-	std::vector<int> results = search_with_joker(text, joker_pattern, joker);
+	vector <int> result = search_with_joker(text, joker, jokerSymb);
+	sort(result.begin(), result.end());
 
-	for (size_t i = 0; i < results.size(); i++)
-		std::cout << results[i] << std::endl;
-
+	for (size_t i = 0; i < result.size(); i++)
+		wcout << result[i] << endl;
+	
 	return 0;
 }

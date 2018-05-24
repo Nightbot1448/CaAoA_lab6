@@ -1,7 +1,7 @@
 #include "../hdr/Aho_Corasick_hdr.h"
 
-std::vector<res_pair > Aho_Corasick(std::string text, 
-									std::vector<std::string> patterns, 
+std::vector<res_pair > Aho_Corasick(std::wstring text, 
+									std::vector<std::wstring> patterns, 
 									size_t number_of_patterns) // typedef in Aho_Corasick_hdr
 {
 	BohrTree_AC bohr;
@@ -20,7 +20,7 @@ bool compareForSort( res_pair el1, res_pair el2)
 		return el1.first < el2.first;
 }
 
-Bohr_vertex_AC::Bohr_vertex_AC(char symbol, int parrent_link) : 
+Bohr_vertex_AC::Bohr_vertex_AC(wchar_t symbol, int parrent_link) : 
 	parrent_link(parrent_link), 
 	symbol(symbol), 
 	is_end_of_pattern(false),
@@ -36,13 +36,13 @@ BohrTree_AC::BohrTree_AC()
 	bohr.push_back(Bohr_vertex_AC('$'));
 }
 
-void BohrTree_AC::addStrToBohr(const std::string &pattern, int numberOfPattern)
+void BohrTree_AC::addStrToBohr(const std::wstring &pattern, int numberOfPattern)
 {
 	int vertexNum = 0;
 
 	for (size_t i = 0; i < pattern.size(); i++)
 	{
-		char symb = pattern[i];
+		wchar_t symb = pattern[i];
 		if (bohr[vertexNum].next_vertices.find(symb) == bohr[vertexNum].next_vertices.end() || bohr[vertexNum].next_vertices[symb] == -1)
 		{
 			bohr.push_back(Bohr_vertex_AC(symb, vertexNum));
@@ -70,7 +70,7 @@ int BohrTree_AC::getSuffixLink(int vertexNum)
 	return bohr[vertexNum].suffix_link;
 }
 
-int BohrTree_AC::getAutoMove(int vertexNum, char symbol)
+int BohrTree_AC::getAutoMove(int vertexNum, wchar_t symbol)
 {
 	if (bohr[vertexNum].moves.find(symbol) == bohr[vertexNum].moves.end() || bohr[vertexNum].moves[symbol] == -1)
 	{
@@ -106,7 +106,7 @@ int BohrTree_AC::getCorrectSuffixLink(int vertexNum)
 }
 
 void BohrTree_AC::check(int vertexNum, int i, 
-					 std::vector <std::string> &patterns, 
+					 std::vector <std::wstring> &patterns, 
 					 std::vector<res_pair > &results)
 {
 	for (int nextVertex = vertexNum; nextVertex != 0; nextVertex = getCorrectSuffixLink(nextVertex))
@@ -120,7 +120,7 @@ void BohrTree_AC::check(int vertexNum, int i,
 	}
 }
 
-std::vector<res_pair > BohrTree_AC::findIn(const std::string &text, std::vector <std::string> &patterns)
+std::vector<res_pair > BohrTree_AC::findIn(const std::wstring &text, std::vector <std::wstring> &patterns)
 {
 	std::vector<res_pair > results;
 	int vertexNum = 0;

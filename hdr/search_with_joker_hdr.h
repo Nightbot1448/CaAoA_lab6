@@ -1,47 +1,56 @@
-#ifndef H_STEP2_H
-#define H_STEP2_H
+#ifndef BohrTree_HPP
+#define BohrTree_HPP
+
 #include "includes.h"
 
-std::vector<int> search_with_joker(std::string text, std::string jokerPattern, char joker);
+using namespace std;
 
+vector<int> search_with_joker(std::wstring text, std::wstring joker, wchar_t jokerSymb);
 
-struct Bohr_vertex_J
+struct Bohr_Vertex
 {
-	Bohr_vertex_J(char symbol, int parrent_link);
 
-    std::map<char,int> next_vertices;
-	std::map<char,int> moves;
-	std::vector<int> pattern_number;
-	int suffix_link ;
-	int correct_suffix_link;
-	int parrent_link;
-	bool is_end_of_pattern;
-	char symbol;
+	Bohr_Vertex(wchar_t symb, int parrentLink = -1) : symb(symb), parrentLink(parrentLink),
+		suffLink(-1), correctSuffLink(-1), isEndOfPattern(false) { }
+		
+	map <wchar_t, int> listOfNextVertex;
+	map <wchar_t, int>	moves;
+
+	vector <int> patternNum;
+	wchar_t symb;
+	int parrentLink;
+	int suffLink;
+	int correctSuffLink;
+	bool isEndOfPattern;
 };
 
-struct BohrTree_J
+
+typedef pair<int, int> Result;
+
+class Bohr_Tree
 {
-	BohrTree_J(size_t size);
-
-	void getParseStrApart(std::stringstream &pattern_stream, char joker);
-
-	void addStrToBohr(const std::string &pattern);
-
+public:
+	Bohr_Tree(size_t text_size);	
+	vector<Result> searchSubstringsByBohr(const wstring & text);
+	vector<int> searchJokerByBohr(const wstring & text, const wstring & joker, wchar_t jokerSymb);
+private:
+	void addStrToBohr(const wstring & pattern, int numberOfPattern);
 	int getSuffixLink(int vertexNum);
-
-	int getAutoMove(int vertexNum, char symbol);
-
+	int getAutoMove(int vertexNum, wchar_t symb);
 	int getCorrectSuffixLink(int vertexNum);
 
-	void check(int vertexNum, int i);
+	void SubstringsCheck(int vertexNum, int currentPos, vector <Result> & results);
 
-	void findIn(const std::string &text);
 
-	//data
-	std::vector<Bohr_vertex_J> bohr;
-	std::vector<int> lengths;
-	std::vector<int> count;
-	std::vector<std::string> patterns;
+	void jokerCheck(int vertexNum, int currentPos, size_t jokerLength);
+
+	vector <size_t> jokerParse(const wstring & jokerPattern, wchar_t joker);
+
+	vector <Bohr_Vertex> bohr;
+	vector <int> results;
+	vector <int> background;
+	vector <size_t> lengths;
+	vector <wstring> patterns;
 };
 
-#endif //H_STEP2_H
+#endif //BohrTree_HPP
