@@ -3,16 +3,15 @@
 int main()
 {
 	setlocale(LC_ALL, "");
-	wstring text;
-	wstring joker;
+	std::wstring text;
+	std::wstring joker;
 	wchar_t jokerSymb;
-	wcin >> text >> joker >> jokerSymb;
+	std::wcin >> text >> joker >> jokerSymb;
 
-	vector <int> result = search_with_joker(text, joker, jokerSymb);
-	sort(result.begin(), result.end());
+	std::vector <int> result = search_with_joker(text, joker, jokerSymb);
 
 	for (size_t i = 0; i < result.size(); i++)
-		wcout << result[i] << endl;
+		std::wcout << result[i] << std::endl;
 	
 	return 0;
 }

@@ -5,10 +5,9 @@
 
 typedef std::pair<int, int> res_pair;
 
-// void strToAlphabet(std::wstring &str);
 bool compareForSort(res_pair el1, res_pair el2);
 
-std::vector<res_pair > Aho_Corasick(std::wstring text, 
+std::vector<res_pair> Aho_Corasick(std::wstring text, 
 									std::vector<std::wstring> patterns,
 									size_t number_of_patterns);
 

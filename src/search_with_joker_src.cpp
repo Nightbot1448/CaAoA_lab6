@@ -1,6 +1,6 @@
 #include "../hdr/search_with_joker_hdr.h"
 
-vector <int> search_with_joker(std::wstring text, std::wstring joker, wchar_t jokerSymb)
+std::vector <int> search_with_joker(std::wstring text, std::wstring joker, wchar_t jokerSymb)
 {
 	Bohr_Tree AKsearch(text.size());
 	return AKsearch.searchJokerByBohr(text, joker, jokerSymb);
@@ -9,10 +9,10 @@ vector <int> search_with_joker(std::wstring text, std::wstring joker, wchar_t jo
 Bohr_Tree::Bohr_Tree(size_t text_size) 
 {
 	bohr.push_back(Bohr_Vertex(-1)); 
-	background = vector<int>(text_size, 0);
+	background = std::vector<int>(text_size, 0);
 }
 
-void Bohr_Tree::addStrToBohr(const wstring &pattern, int numberOfPattern)
+void Bohr_Tree::addStrToBohr(const std::wstring &pattern, int numberOfPattern)
 {
 	int vertexNum = 0;
 
@@ -79,7 +79,7 @@ int Bohr_Tree::getCorrectSuffixLink(int vertexNum)
 	return bohr[vertexNum].correctSuffLink;
 }
 
-void Bohr_Tree::SubstringsCheck(int vertexNum, int currentPos/*, const vector <wstring> &patterns*/, vector <Result> &results)
+void Bohr_Tree::SubstringsCheck(int vertexNum, int currentPos, std::vector<res_pair> &results)
 {
 	for (int nextVertex = vertexNum; nextVertex != 0; nextVertex = getCorrectSuffixLink(nextVertex))
 	{
@@ -108,12 +108,12 @@ void Bohr_Tree::jokerCheck(int vertexNum, int currentPos, size_t jokerLength)
 	}
 }
 
-vector <Result> Bohr_Tree::searchSubstringsByBohr(const wstring &text)
+std::vector <res_pair> Bohr_Tree::searchSubstringsByBohr(const std::wstring &text)
 {
 	for (size_t i = 0; i<patterns.size(); i++)
 		addStrToBohr(patterns[i], i);
 
-	vector <Result> results;
+	std::vector <res_pair> results;
 
 	int vertexNum = 0;
 
@@ -122,16 +122,14 @@ vector <Result> Bohr_Tree::searchSubstringsByBohr(const wstring &text)
 		vertexNum = getAutoMove(vertexNum, text[i]);
 		SubstringsCheck(vertexNum, i + 1, results);
 	}
-
 	return results;
 }
 
-vector <size_t> Bohr_Tree::jokerParse(const wstring &jokerPattern, wchar_t joker)
+std::vector <size_t> Bohr_Tree::jokerParse(const std::wstring &jokerPattern, wchar_t joker)
 {
 
-	vector <size_t> lengths;
-
-	wstring tmp;
+	std::vector <size_t> lengths;
+	std::wstring tmp;
 
 	for (size_t i = 0; i < jokerPattern.size(); i++)
 	{
@@ -158,7 +156,7 @@ vector <size_t> Bohr_Tree::jokerParse(const wstring &jokerPattern, wchar_t joker
 	return lengths;
 }
 
-vector<int> Bohr_Tree::searchJokerByBohr(const wstring &text, const wstring &joker, wchar_t jokerSymb)
+std::vector<int> Bohr_Tree::searchJokerByBohr(const std::wstring &text, const std::wstring &joker, wchar_t jokerSymb)
 {
 	lengths = jokerParse(joker, jokerSymb);
 	int vertexNum = 0;
