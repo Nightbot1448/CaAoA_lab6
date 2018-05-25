@@ -1,5 +1,5 @@
-#ifndef BohrTree_HPP
-#define BohrTree_HPP
+#ifndef SEARCH_WITH_JOKER_HPP
+#define SEARCH_WITH_JOKER_HPP
 
 #include "includes.h"
 
@@ -8,17 +8,15 @@ std::vector<int> search_with_joker(std::wstring text, std::wstring joker, wchar_
 
 struct Bohr_Vertex
 {
-
 	Bohr_Vertex(wchar_t symb, int parrentLink = -1) : symb(symb), parrentLink(parrentLink),
-		suffLink(-1), correctSuffLink(-1), isEndOfPattern(false) { }
-
+		suffixLink(-1), correctSuffixLink(-1), isEndOfPattern(false) { }
 	std::map<wchar_t, int> listOfNextVertex;
 	std::map<wchar_t, int> moves;
 	std::vector <int> patternNum;
 	wchar_t symb;
 	int parrentLink;
-	int suffLink;
-	int correctSuffLink;
+	int suffixLink;
+	int correctSuffixLink;
 	bool isEndOfPattern;
 };
 
@@ -49,4 +47,4 @@ private:
 	std::vector<std::wstring> patterns;
 };
 
-#endif //BohrTree_HPP
+#endif //SEARCH_WITH_JOKER_HPP

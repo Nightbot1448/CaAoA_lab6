@@ -33,15 +33,15 @@ void Bohr_Tree::addStrToBohr(const std::wstring &pattern, int numberOfPattern)
 
 int Bohr_Tree::getSuffixLink(int vertexNum)
 {
-	if (bohr[vertexNum].suffLink == -1)
+	if (bohr[vertexNum].suffixLink == -1)
 	{
 		if (vertexNum == 0 || bohr[vertexNum].parrentLink == 0)
-			bohr[vertexNum].suffLink = 0;
+			bohr[vertexNum].suffixLink = 0;
 		else
-			bohr[vertexNum].suffLink = getAutoMove(getSuffixLink(bohr[vertexNum].parrentLink), bohr[vertexNum].symb);
+			bohr[vertexNum].suffixLink = getAutoMove(getSuffixLink(bohr[vertexNum].parrentLink), bohr[vertexNum].symb);
 	}
 
-	return bohr[vertexNum].suffLink;
+	return bohr[vertexNum].suffixLink;
 }
 
 int Bohr_Tree::getAutoMove(int vertexNum, wchar_t symb)
@@ -63,20 +63,20 @@ int Bohr_Tree::getAutoMove(int vertexNum, wchar_t symb)
 
 int Bohr_Tree::getCorrectSuffixLink(int vertexNum)
 {
-	if (bohr[vertexNum].correctSuffLink == -1)
+	if (bohr[vertexNum].correctSuffixLink == -1)
 	{
 		int tmpLink = getSuffixLink(vertexNum);
 		if (tmpLink == 0)
-			bohr[vertexNum].correctSuffLink = 0;
+			bohr[vertexNum].correctSuffixLink = 0;
 		else
 		{
 			if (bohr[tmpLink].isEndOfPattern == true)
-				bohr[vertexNum].correctSuffLink = tmpLink;
+				bohr[vertexNum].correctSuffixLink = tmpLink;
 			else
-				bohr[vertexNum].correctSuffLink = getCorrectSuffixLink(tmpLink);
+				bohr[vertexNum].correctSuffixLink = getCorrectSuffixLink(tmpLink);
 		}
 	}
-	return bohr[vertexNum].correctSuffLink;
+	return bohr[vertexNum].correctSuffixLink;
 }
 
 void Bohr_Tree::SubstringsCheck(int vertexNum, int currentPos, std::vector<res_pair> &results)
